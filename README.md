@@ -32,4 +32,4 @@ Visit my blog about this repository --> https://medium.com/pacroy/continuous-int
 | x-csrf-token | *Automatically filled during run* |
 
 \* You can check the host and port via transaction `SICF` and select *Test Service*.  
-\** You can also selectively run several packages, classes, or programs. Feel free to adjust the request XML.  
+\** You can also selectively run several packages, classes, or programs. Feel free to adjust the request XML. See object uri and type from *ABAP Communication Log* view in ADT.  
