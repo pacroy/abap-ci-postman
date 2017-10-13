@@ -1,137 +1,355 @@
 {
-	"id": "dc0c7615-9651-41f3-5933-926f193235dd",
-	"name": "abap_unit_coverage",
-	"description": "",
-	"order": [
-		"d0df5374-6b5f-32e2-05d7-1c332832630e",
-		"e0cc29c6-d333-6683-3f56-a878d167e346",
-		"49801be4-0bc0-94e5-13b4-7a68b9f62271"
-	],
-	"folders": [],
-	"folders_order": [],
-	"timestamp": 1504328112943,
-	"owner": "2240689",
-	"public": false,
-	"hasRequests": true,
-	"requests": [
+	"info": {
+		"name": "abap_unit_coverage",
+		"_postman_id": "723ac2a9-85c1-df34-0e55-d065f6da2503",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
 		{
-			"id": "49801be4-0bc0-94e5-13b4-7a68b9f62271",
-			"headers": "Authorization: {{authorization}}\nX-CSRF-Token: {{x-csrf-token}}\nContent-Type: application/xml\n",
-			"headerData": [
-				{
-					"key": "Authorization",
-					"value": "{{authorization}}",
-					"description": "",
-					"enabled": true
-				},
-				{
-					"key": "X-CSRF-Token",
-					"value": "{{x-csrf-token}}",
-					"description": "",
-					"enabled": true
-				},
-				{
-					"key": "Content-Type",
-					"value": "application/xml",
-					"description": "",
-					"enabled": true
-				}
-			],
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/runtime/traces/coverage/measurements/{{coverage_id}}",
-			"queryParams": [],
-			"preRequestScript": "",
-			"pathVariables": {},
-			"pathVariableData": [],
-			"method": "POST",
-			"data": [],
-			"dataMode": "raw",
-			"tests": "var coverageType = postman.getEnvironmentVariable(\"coverage_type\");\nvar minimumCoverage = parseInt(postman.getEnvironmentVariable(\"coverage_min\"));\nvar maximumLevel = parseInt(postman.getEnvironmentVariable(\"coverage_maxlevel\"));\nvar checkLevel = parseInt(postman.getEnvironmentVariable(\"coverage_chklevel\"));\nvar exclusion = JSON.parse(postman.getEnvironmentVariable(\"exclusion\"));\n\nfunction getCoveragePercentage(covStat) {\n    if (covStat.total === 0) {\n        return \"NA\";\n    } else {\n        return (covStat.executed / covStat.total * 100).toFixed(2);\n    }\n}\n\nfunction getCoverageStat(node) {\n    var coverage = node.coverages.coverage.find(item => item.$.type === coverageType).$;\n    var covStat = {\"total\":0,\"executed\":0};\n    covStat.total = parseInt(coverage.total);\n    covStat.executed = parseInt(coverage.executed);\n    return covStat;\n}\n\nfunction displayCoverageResult(attribute, covStat, level, excluded, reason) {\n    var covPercent = getCoveragePercentage(covStat);\n    if ((level > checkLevel) || (excluded)) {\n        var exclude_str = \"\";\n        if (excluded) exclude_str = \" [Excluded: \" + reason +\"]\";\n        tests[getPrefixFor(level) + attribute[\"adtcore:type\"] + \"/\" + attribute[\"adtcore:name\"] + \" \" + coverageType + \" coverage = \" + covPercent + \"%\" + exclude_str] = true;\n    } else {\n        tests[getPrefixFor(level) + attribute[\"adtcore:type\"] + \"/\" + attribute[\"adtcore:name\"] + \" \" + coverageType + \" coverage >= \" + minimumCoverage + \"% [Actual=\" + covPercent + \"%]\"] =  covPercent >= minimumCoverage;\n    }\n    \n}\n\nfunction processNodes(nodes, level, covStat) {\n    if (nodes === undefined) return;\n    if (nodes.node.length === undefined) {\n        testCoverage(nodes.node, level, covStat);\n    } else {\n        nodes.node.forEach(function (node, index) { \n            testCoverage(node, level, covStat);\n        } );\n    }\n}\n\nfunction getPrefixFor(level) {\n    var prefix = \"\";\n    for (i=0; i<level; i++) {\n        prefix += \">>\";\n    }\n    return prefix;\n}\n\nfunction isExcluded(name, type) {\n    for (var i=0; i<exclusion.length; i++) {\n        if ((name === exclusion[i].name) && (type === exclusion[i].type)) return exclusion[i];\n    }\n    return false;\n}\n\nfunction testCoverage(node, level, covStat) {\n    var attribute = node[\"adtcore:objectReference\"].$;\n    var covStatTemp = {\"total\":0,\"executed\":0};\n    \n    if ((node.nodes === undefined) || (level >= maximumLevel)) {\n        //Leaf node\n        covStatTemp = getCoverageStat(node);\n    } else {\n        //Drill-down\n        processNodes(node.nodes, level+1, covStatTemp);\n    }\n    \n    if (excluded_item = isExcluded(attribute[\"adtcore:name\"], attribute[\"adtcore:type\"])) {\n        displayCoverageResult(attribute, covStatTemp, level, true, excluded_item.reason);\n    } else {\n        displayCoverageResult(attribute, covStatTemp, level);\n        covStat.total += covStatTemp.total;\n        covStat.executed += covStatTemp.executed;\n    }\n}\n\nif (tests[\"Status code is 200\"] = responseCode.code === 200) {\n    var jsonObject = xml2Json(responseBody);\n    var covStat = {\"total\":0,\"executed\":0};\n    \n    processNodes(jsonObject[\"cov:result\"].nodes, 0, covStat);\n}\n",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1505027909161,
-			"name": "CheckCodeCoverage",
-			"description": "",
-			"collectionId": "dc0c7615-9651-41f3-5933-926f193235dd",
-			"responses": [],
-			"rawModeData": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<cov:query xmlns:cov=\"http://www.sap.com/adt/cov\" xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n    <adtcore:objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n        <objectSet kind=\"inclusive\">\r\n            <adtcore:objectReferences>\r\n                <adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n            </adtcore:objectReferences>\r\n        </objectSet>\r\n    </adtcore:objectSets>\r\n</cov:query>"
-		},
-		{
-			"id": "d0df5374-6b5f-32e2-05d7-1c332832630e",
-			"headers": "X-CSRF-Token: Fetch\nAuthorization: {{authorization}}\n",
-			"headerData": [
-				{
-					"key": "X-CSRF-Token",
-					"value": "Fetch",
-					"description": "",
-					"enabled": true
-				},
-				{
-					"key": "Authorization",
-					"value": "{{authorization}}",
-					"description": "",
-					"enabled": true
-				}
-			],
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit",
-			"queryParams": [],
-			"preRequestScript": "//Display environment variables\nconsole.log(\"==========Environment Variables==========\");\nfor(var attr in environment){\n    console.log(attr + \"=\" + environment[attr]);\n}",
-			"pathVariables": {},
-			"pathVariableData": [],
-			"method": "GET",
-			"data": [],
-			"dataMode": "raw",
-			"version": 2,
-			"tests": "if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {\n    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));\n} else {\n    postman.setNextRequest(null);   \n}",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1505027718387,
 			"name": "GetToken",
-			"description": "",
-			"collectionId": "dc0c7615-9651-41f3-5933-926f193235dd",
-			"responses": [],
-			"rawModeData": "{\n\t\n}"
-		},
-		{
-			"id": "e0cc29c6-d333-6683-3f56-a878d167e346",
-			"headers": "Authorization: {{authorization}}\nX-CSRF-Token: {{x-csrf-token}}\nContent-Type: application/xml\n",
-			"headerData": [
+			"event": [
 				{
-					"key": "Authorization",
-					"value": "{{authorization}}",
-					"description": "",
-					"enabled": true
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
+							"    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
+							"} else {",
+							"    postman.setNextRequest(null);   ",
+							"}"
+						]
+					}
 				},
 				{
-					"key": "X-CSRF-Token",
-					"value": "{{x-csrf-token}}",
-					"description": "",
-					"enabled": true
-				},
-				{
-					"key": "Content-Type",
-					"value": "application/xml",
-					"description": "",
-					"enabled": true
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Display environment variables",
+							"console.log(\"==========Environment Variables==========\");",
+							"for(var attr in environment){",
+							"    console.log(attr + \"=\" + environment[attr]);",
+							"}"
+						]
+					}
 				}
 			],
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit/testruns",
-			"queryParams": [],
-			"preRequestScript": null,
-			"pathVariables": {},
-			"pathVariableData": [],
-			"method": "POST",
-			"data": [],
-			"dataMode": "raw",
-			"tests": "var totalAlert = 0;\nvar programAlert = 0;\n\nfunction processAlert(alert, level) {\n    if (alert.$.severity === \"critical\") {\n        totalAlert++;\n        programAlert++;\n        \n        //Print out error details\n        if (alert.details.detail.$ === undefined) {\n            tests[\">>\" + alert.title ] = false;\n        } else {\n            tests[\">>\" + alert.title + \": \" + alert.details.detail.$.text] = false;\n        }\n    }\n}\n\nfunction processAlerts(alerts, level) {\n    if ((alerts.alert === undefined) || (alerts.alert === \"\")) return;\n    if (alerts.alert.length === undefined) {\n        processAlert(alerts.alert);\n    } else {\n        alerts.alert.forEach(function (alert, index, level) {\n            processAlert(alert, level);\n        });\n    }\n}\n\nfunction processNextNodes(node, level) {\n    if (node.testClasses !== undefined) {\n        processNodes(node.testClasses.testClass, ++level);\n        tests[\"No critical alert for \" + node.$[\"adtcore:packageName\"] + \"/\" + node.$[\"adtcore:type\"] + \"/\" + node.$[\"adtcore:name\"] + \" [Actual=\" + programAlert + \"]\"] = programAlert === 0;\n        programAlert = 0;\n    } else if (node.testMethods !== undefined) {\n        processNodes(node.testMethods.testMethod, ++level);\n    }\n}\n\nfunction processNodes(node, level) {\n    if (node === undefined) return;\n    if (node.length === undefined) {\n        processAlerts(node.alerts, level);\n        processNextNodes(node, level);\n    } else {\n        node.forEach(function (node, index) {\n            processAlerts(node.alerts, level);\n            processNextNodes(node, level);\n        });\n    }\n}\n\nif (tests[\"Status code is 200\"] = responseCode.code === 200) {\n    var jsonObject = xml2Json(responseBody);\n    \n    if (tests[\"Job finished successfully\"] = jsonObject[\"aunit:runResult\"].alerts == \"\") {\n        processNodes(jsonObject[\"aunit:runResult\"].program, 0);\n    } else {\n        processAlerts(jsonObject[\"aunit:runResult\"].alerts, 0);\n    }\n    \n    if (totalAlert === 0) {\n        //Get and set coverage ID\n        if (jsonObject[\"aunit:runResult\"].external !== undefined) {\n            var uriSegments = jsonObject[\"aunit:runResult\"].external.coverage.$[\"adtcore:uri\"].split(\"/\");\n            var coverageID = uriSegments[uriSegments.length - 1];\n            tests[\"Coverage ID \" + coverageID ] = true;\n            postman.setGlobalVariable(\"coverage_id\", coverageID);\n        } else {\n            tests[\"No coverage ID, skipping code coverage check...\"] = true;\n            postman.setNextRequest(\"CreateWorklist\");\n        }\n    } else {\n        tests[\"ABAP Unit failed. The remaining steps are skipped...\"] = true;\n        postman.setNextRequest(null);\n    }\n}",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1504777476508,
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "Fetch"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"abapunit"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
 			"name": "RunABAPUnit",
-			"description": "",
-			"collectionId": "dc0c7615-9651-41f3-5933-926f193235dd",
-			"responses": [],
-			"rawModeData": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<aunit:runConfiguration xmlns:aunit=\"http://www.sap.com/adt/aunit\">\r\n\t<external>\r\n\t\t<coverage active=\"true\"/>\r\n\t</external>\r\n\t<adtcore:objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n\t\t<objectSet kind=\"inclusive\">\r\n\t\t\t<adtcore:objectReferences>\r\n\t\t\t\t<adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n\t\t\t</adtcore:objectReferences>\r\n\t\t</objectSet>\r\n\t</adtcore:objectSets>\r\n</aunit:runConfiguration>",
-			"collection_id": "dc0c7615-9651-41f3-5933-926f193235dd"
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var totalAlert = 0;",
+							"var programAlert = 0;",
+							"",
+							"function processAlert(alert, level) {",
+							"    if (alert.$.severity === \"critical\") {",
+							"        totalAlert++;",
+							"        programAlert++;",
+							"        ",
+							"        //Print out error details",
+							"        if (alert.details.detail.$ === undefined) {",
+							"            tests[\">>\" + alert.title ] = false;",
+							"        } else {",
+							"            tests[\">>\" + alert.title + \": \" + alert.details.detail.$.text] = false;",
+							"        }",
+							"    }",
+							"}",
+							"",
+							"function processAlerts(alerts, level) {",
+							"    if ((alerts.alert === undefined) || (alerts.alert === \"\")) return;",
+							"    if (alerts.alert.length === undefined) {",
+							"        processAlert(alerts.alert);",
+							"    } else {",
+							"        alerts.alert.forEach(function (alert, index, level) {",
+							"            processAlert(alert, level);",
+							"        });",
+							"    }",
+							"}",
+							"",
+							"function processNextNodes(node, level) {",
+							"    if (node.testClasses !== undefined) {",
+							"        processNodes(node.testClasses.testClass, ++level);",
+							"        tests[\"No critical alert for \" + node.$[\"adtcore:packageName\"] + \"/\" + node.$[\"adtcore:type\"] + \"/\" + node.$[\"adtcore:name\"] + \" [Actual=\" + programAlert + \"]\"] = programAlert === 0;",
+							"        programAlert = 0;",
+							"    } else if (node.testMethods !== undefined) {",
+							"        processNodes(node.testMethods.testMethod, ++level);",
+							"    }",
+							"}",
+							"",
+							"function processNodes(node, level) {",
+							"    if (node === undefined) return;",
+							"    if (node.length === undefined) {",
+							"        processAlerts(node.alerts, level);",
+							"        processNextNodes(node, level);",
+							"    } else {",
+							"        node.forEach(function (node, index) {",
+							"            processAlerts(node.alerts, level);",
+							"            processNextNodes(node, level);",
+							"        });",
+							"    }",
+							"}",
+							"",
+							"if (tests[\"Status code is 200\"] = responseCode.code === 200) {",
+							"    var jsonObject = xml2Json(responseBody);",
+							"    ",
+							"    if (tests[\"Job finished successfully\"] = jsonObject[\"aunit:runResult\"].alerts == \"\") {",
+							"        processNodes(jsonObject[\"aunit:runResult\"].program, 0);",
+							"    } else {",
+							"        processAlerts(jsonObject[\"aunit:runResult\"].alerts, 0);",
+							"    }",
+							"    ",
+							"    if (totalAlert === 0) {",
+							"        //Get and set coverage ID",
+							"        if (jsonObject[\"aunit:runResult\"].external !== undefined) {",
+							"            var uriSegments = jsonObject[\"aunit:runResult\"].external.coverage.$[\"adtcore:uri\"].split(\"/\");",
+							"            var coverageID = uriSegments[uriSegments.length - 1];",
+							"            tests[\"Coverage ID \" + coverageID ] = true;",
+							"            postman.setGlobalVariable(\"coverage_id\", coverageID);",
+							"        } else {",
+							"            tests[\"No coverage ID, skipping code coverage check...\"] = true;",
+							"            postman.setNextRequest(\"CreateWorklist\");",
+							"        }",
+							"    } else {",
+							"        tests[\"ABAP Unit failed. The remaining steps are skipped...\"] = true;",
+							"        postman.setNextRequest(null);",
+							"    }",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "{{x-csrf-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<aunit:runConfiguration xmlns:aunit=\"http://www.sap.com/adt/aunit\">\r\n\t<external>\r\n\t\t<coverage active=\"true\"/>\r\n\t</external>\r\n\t<adtcore:objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n\t\t<objectSet kind=\"inclusive\">\r\n\t\t\t<adtcore:objectReferences>\r\n\t\t\t\t<adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n\t\t\t</adtcore:objectReferences>\r\n\t\t</objectSet>\r\n\t</adtcore:objectSets>\r\n</aunit:runConfiguration>"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit/testruns",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"abapunit",
+						"testruns"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CheckCodeCoverage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var coverageType = postman.getEnvironmentVariable(\"coverage_type\");",
+							"var minimumCoverage = postman.getEnvironmentVariable(\"coverage_min\");",
+							"var maximumLevel = postman.getEnvironmentVariable(\"coverage_maxlevel\");",
+							"var checkLevel = postman.getEnvironmentVariable(\"coverage_chklevel\");",
+							"var exclusion = JSON.parse(postman.getEnvironmentVariable(\"exclusion\"));",
+							"",
+							"function getCoveragePercentage(covStat) {",
+							"    if (covStat.total === 0) {",
+							"        return \"NA\";",
+							"    } else {",
+							"        return (covStat.executed / covStat.total * 100).toFixed(2);",
+							"    }",
+							"}",
+							"",
+							"function getCoverageStat(node) {",
+							"    var coverage = node.coverages.coverage.find(item => item.$.type === coverageType).$;",
+							"    var covStat = {\"total\":0,\"executed\":0};",
+							"    covStat.total = parseInt(coverage.total);",
+							"    covStat.executed = parseInt(coverage.executed);",
+							"    return covStat;",
+							"}",
+							"",
+							"function displayCoverageResult(attribute, covStat, level, excluded, reason) {",
+							"    var covPercent = getCoveragePercentage(covStat);",
+							"    if ((level > checkLevel) || (excluded)) {",
+							"        var exclude_str = \"\";",
+							"        if (excluded) exclude_str = \" [Excluded: \" + reason +\"]\";",
+							"        tests[getPrefixFor(level) + attribute[\"adtcore:type\"] + \"/\" + attribute[\"adtcore:name\"] + \" \" + coverageType + \" coverage = \" + covPercent + \"%\" + exclude_str] = true;",
+							"    } else {",
+							"        tests[getPrefixFor(level) + attribute[\"adtcore:type\"] + \"/\" + attribute[\"adtcore:name\"] + \" \" + coverageType + \" coverage >= \" + minimumCoverage + \"% [Actual=\" + covPercent + \"%]\"] =  covPercent >= minimumCoverage;",
+							"    }",
+							"    ",
+							"}",
+							"",
+							"function processNodes(nodes, level, covStat) {",
+							"    if (nodes === undefined) return;",
+							"    if (nodes.node.length === undefined) {",
+							"        testCoverage(nodes.node, level, covStat);",
+							"    } else {",
+							"        nodes.node.forEach(function (node, index) { ",
+							"            testCoverage(node, level, covStat);",
+							"        } );",
+							"    }",
+							"}",
+							"",
+							"function getPrefixFor(level) {",
+							"    var prefix = \"\";",
+							"    for (i=0; i<level; i++) {",
+							"        prefix += \">>\";",
+							"    }",
+							"    return prefix;",
+							"}",
+							"",
+							"function isExcluded(name, type) {",
+							"    for (var i=0; i<exclusion.length; i++) {",
+							"        if ((name === exclusion[i].name) && (type === exclusion[i].type)) return exclusion[i];",
+							"    }",
+							"    return false;",
+							"}",
+							"",
+							"function testCoverage(node, level, covStat) {",
+							"    var attribute = node[\"adtcore:objectReference\"].$;",
+							"    var covStatTemp = {\"total\":0,\"executed\":0};",
+							"    ",
+							"    if ((node.nodes === undefined) || (level >= maximumLevel)) {",
+							"        //Leaf node",
+							"        covStatTemp = getCoverageStat(node);",
+							"    } else {",
+							"        //Drill-down",
+							"        processNodes(node.nodes, level+1, covStatTemp);",
+							"    }",
+							"    ",
+							"    if (excluded_item = isExcluded(attribute[\"adtcore:name\"], attribute[\"adtcore:type\"])) {",
+							"        displayCoverageResult(attribute, covStatTemp, level, true, excluded_item.reason);",
+							"    } else {",
+							"        displayCoverageResult(attribute, covStatTemp, level);",
+							"        covStat.total += covStatTemp.total;",
+							"        covStat.executed += covStatTemp.executed;",
+							"    }",
+							"}",
+							"",
+							"if (tests[\"Status code is 200\"] = responseCode.code === 200) {",
+							"    var jsonObject = xml2Json(responseBody);",
+							"    var covStat = {\"total\":0,\"executed\":0};",
+							"    ",
+							"    processNodes(jsonObject[\"cov:result\"].nodes, 0, covStat);",
+							"}",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "{{x-csrf-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<cov:query xmlns:cov=\"http://www.sap.com/adt/cov\" xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n    <adtcore:objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n        <objectSet kind=\"inclusive\">\r\n            <adtcore:objectReferences>\r\n                <adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n            </adtcore:objectReferences>\r\n        </objectSet>\r\n    </adtcore:objectSets>\r\n</cov:query>"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/runtime/traces/coverage/measurements/{{coverage_id}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"runtime",
+						"traces",
+						"coverage",
+						"measurements",
+						"{{coverage_id}}"
+					]
+				},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }

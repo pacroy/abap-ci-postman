@@ -1,148 +1,346 @@
 {
-	"id": "15ada0a6-0959-0995-af92-7668de3643fe",
-	"name": "abap_sci",
-	"description": "",
-	"order": [
-		"5c6d2016-0b25-8321-479d-c9eb24352461",
-		"0c4b303e-809d-e465-fce6-57b65b2f6f77",
-		"e4697c2e-75e1-b9af-1785-93aa1f6d6ac1",
-		"d8cf61ea-57e0-a6b9-f6a2-5439b85b5cbf"
-	],
-	"folders": [],
-	"folders_order": [],
-	"timestamp": 1504933563143,
-	"owner": "2240689",
-	"public": false,
-	"hasRequests": true,
-	"requests": [
+	"info": {
+		"name": "abap_sci",
+		"_postman_id": "695d9727-8361-d90b-73bd-bf523f0d9085",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
 		{
-			"id": "0c4b303e-809d-e465-fce6-57b65b2f6f77",
-			"headers": "Authorization: {{authorization}}\nX-CSRF-Token: {{x-csrf-token}}\n",
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists?checkVariant={{atc_variant}}",
-			"preRequestScript": "",
-			"pathVariables": {},
-			"method": "POST",
-			"data": [],
-			"dataMode": "raw",
-			"tests": "if (tests[\"Status code is 200\"] = responseCode.code === 200) {\n    var worklistID = responseBody;\n    tests[\"Worklist ID \" + worklistID ] = true;\n    postman.setGlobalVariable(\"worklist_id\", worklistID);   \n} else {\n    tests[\"Worklist creation failed, skipping ATC...\"] = true;\n    postman.setNextRequest(null);\n}\n",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1504511190743,
-			"name": "CreateWorklist",
-			"description": "",
-			"collectionId": "15ada0a6-0959-0995-af92-7668de3643fe",
-			"responses": [],
-			"isFromCollection": true,
-			"rawModeData": "",
-			"collection_id": "15ada0a6-0959-0995-af92-7668de3643fe"
-		},
-		{
-			"id": "5c6d2016-0b25-8321-479d-c9eb24352461",
-			"headers": "X-CSRF-Token: Fetch\nAuthorization: {{authorization}}\n",
-			"headerData": [
-				{
-					"key": "X-CSRF-Token",
-					"value": "Fetch",
-					"description": "",
-					"enabled": true
-				},
-				{
-					"key": "Authorization",
-					"value": "{{authorization}}",
-					"description": "",
-					"enabled": true
-				}
-			],
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit",
-			"queryParams": [],
-			"preRequestScript": "//Display environment variables\nconsole.log(\"==========Environment Variables==========\");\nfor(var attr in environment){\n    console.log(attr + \"=\" + environment[attr]);\n}",
-			"pathVariables": {},
-			"pathVariableData": [],
-			"method": "GET",
-			"data": [],
-			"dataMode": "raw",
-			"version": 2,
-			"tests": "if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {\n    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));\n} else {\n    postman.setNextRequest(null);   \n}",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1504754954964,
 			"name": "GetToken",
-			"description": "",
-			"collectionId": "15ada0a6-0959-0995-af92-7668de3643fe",
-			"responses": [],
-			"isFromCollection": true,
-			"rawModeData": "{\n\t\n}",
-			"collection_id": "15ada0a6-0959-0995-af92-7668de3643fe"
-		},
-		{
-			"id": "d8cf61ea-57e0-a6b9-f6a2-5439b85b5cbf",
-			"headers": "Authorization: {{authorization}}\nX-CSRF-Token: {{x-csrf-token}}\n",
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists/{{worklist_id}}?includeExemptedFindings=false",
-			"preRequestScript": null,
-			"pathVariables": {},
-			"method": "GET",
-			"data": null,
-			"dataMode": "params",
-			"tests": "\nfunction displayFinding(finding, attr) {\n    var priority = finding.$[\"atcfinding:priority\"];\n    if (priority === \"1\") { //Error\n        tests[\"ERROR: \" + finding.$[\"atcfinding:checkTitle\"] + \": \" + attr[\"adtcore:packageName\"] + \"/\" + attr[\"adtcore:type\"] + \"/\" + attr[\"adtcore:name\"] + \" by \" + attr[\"atcobject:author:author\"]] = false;\n    } else if (priority === \"2\") {  //Warning\n        tests[\"WARNING: \" + finding.$[\"atcfinding:checkTitle\"] + \": \" + attr[\"adtcore:packageName\"] + \"/\" + attr[\"adtcore:type\"] + \"/\" + attr[\"adtcore:name\"] + \" by \" + attr[\"atcobject:author:author\"]] = true;\n    }\n}\n\nfunction processFinding(finding, attr) {\n    if (finding === undefined) return;\n    if (finding.length === undefined) {\n        displayFinding(finding, attr);\n    } else {\n        finding.forEach(function (finding) {\n            displayFinding(finding, attr);\n        });\n    }\n}\n\nfunction processObject(object) {\n    if (object === undefined) return;\n    if (object.length === undefined) {\n        processFinding(object[\"atcobject:findings\"][\"atcfinding:finding\"], object.$);\n    } else {\n        object.forEach(function (object) {\n            processFinding(object[\"atcobject:findings\"][\"atcfinding:finding\"], object.$);\n        });\n    }\n}\n\nif (tests[\"Status code is 200\"] = responseCode.code === 200) {\n    var jsonObject = xml2Json(responseBody);\n    \n    processObject(jsonObject[\"atcworklist:worklist\"][\"atcworklist:objects\"][\"atcobject:object\"]);\n}",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1504511187046,
-			"name": "GetATCResult",
-			"description": "",
-			"collectionId": "15ada0a6-0959-0995-af92-7668de3643fe",
-			"responses": [],
-			"isFromCollection": true,
-			"collection_id": "15ada0a6-0959-0995-af92-7668de3643fe"
-		},
-		{
-			"id": "e4697c2e-75e1-b9af-1785-93aa1f6d6ac1",
-			"headers": "Authorization: {{authorization}}\nX-CSRF-Token: {{x-csrf-token}}\nContent-Type: application/xml\n",
-			"headerData": [
+			"event": [
 				{
-					"key": "Authorization",
-					"value": "{{authorization}}",
-					"description": "",
-					"enabled": true
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
+							"    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
+							"} else {",
+							"    postman.setNextRequest(null);   ",
+							"}"
+						]
+					}
 				},
 				{
-					"key": "X-CSRF-Token",
-					"value": "{{x-csrf-token}}",
-					"description": "",
-					"enabled": true
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"//Display environment variables",
+							"console.log(\"==========Environment Variables==========\");",
+							"for(var attr in environment){",
+							"    console.log(attr + \"=\" + environment[attr]);",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
 				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "Fetch"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\n}"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"abapunit"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CreateWorklist",
+			"event": [
 				{
-					"key": "Content-Type",
-					"value": "application/xml",
-					"description": "",
-					"enabled": true
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"if (tests[\"Status code is 200\"] = responseCode.code === 200) {",
+							"    var worklistID = responseBody;",
+							"    tests[\"Worklist ID \" + worklistID ] = true;",
+							"    postman.setGlobalVariable(\"worklist_id\", worklistID);   ",
+							"} else {",
+							"    tests[\"Worklist creation failed, skipping ATC...\"] = true;",
+							"    postman.setNextRequest(null);",
+							"}",
+							""
+						]
+					}
 				}
 			],
-			"url": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/runs?worklistId={{worklist_id}}",
-			"queryParams": [
-				{
-					"key": "worklistId",
-					"value": "{{worklist_id}}",
-					"equals": true,
-					"description": "",
-					"enabled": true
-				}
-			],
-			"preRequestScript": "",
-			"pathVariables": {},
-			"pathVariableData": [],
-			"method": "POST",
-			"data": [],
-			"dataMode": "raw",
-			"tests": "const statText = \"FINDING_STATS\";\nconst failText = \"TOOL_FAILURE\";\n\nfunction getFailInfo(info) {\n    if (info === undefined) return;\n    if (info.length === undefined ) {\n        if (info[\"atcinfo:type\"] === failText) return info[\"atcinfo:description\"];\n    } else {\n        var stat = info.find(item => item[\"atcinfo:type\"] === failText);\n        if (stat !== undefined) {\n            return stat[\"atcinfo:description\"];\n        }\n    }\n    return \"\";\n}\n\nfunction getStatInfo(info) {\n    if (info === undefined) return;\n    if (info.length === undefined ) {\n        if (info[\"atcinfo:type\"] === statText) return info[\"atcinfo:description\"];\n    } else {\n        var stat = info.find(item => item[\"atcinfo:type\"] === statText);\n        if (stat !== undefined) {\n            return stat[\"atcinfo:description\"];\n        }\n    }\n    return \"\";\n}\n\nif (tests[\"Status code is 200\"] = responseCode.code === 200) {\n    var jsonObject = xml2Json(responseBody);\n    \n    var fail = getFailInfo(jsonObject[\"atcworklist:worklistRun\"][\"atcworklist:infos\"][\"atcinfo:info\"]);\n    var stat = getStatInfo(jsonObject[\"atcworklist:worklistRun\"][\"atcworklist:infos\"][\"atcinfo:info\"]);\n    \n    if ((fail !== undefined) && (fail !== \"\")) {\n        tests[fail] = false;\n        postman.setNextRequest(null);\n    } else {\n        if ((stat !== undefined) && (stat !== \"\")) {\n            totalError = statSegments = stat.split(\",\")[0];\n            totalWarning = statSegments = stat.split(\",\")[1];\n            tests[\"No error found [Actual=\" + stat + \"]\"] = totalError === \"0\";\n            \n            if ((totalError === \"0\") && (totalWarning === \"0\")) {\n                postman.setNextRequest(null);\n            }\n        } else {\n            tests[\"No result statistics found. The remaining steps are skipped...\"] = true;\n            postman.setNextRequest(null);\n        }\n    }\n}\n",
-			"currentHelper": "normal",
-			"helperAttributes": {},
-			"time": 1504838616725,
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "{{x-csrf-token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists?checkVariant={{atc_variant}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"atc",
+						"worklists"
+					],
+					"query": [
+						{
+							"key": "checkVariant",
+							"value": "{{atc_variant}}",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
 			"name": "RunATC",
-			"description": "",
-			"collectionId": "15ada0a6-0959-0995-af92-7668de3643fe",
-			"responses": [],
-			"rawModeData": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<atc:run xmlns:atc=\"http://www.sap.com/adt/atc\" maximumVerdicts=\"100\">\r\n  <objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n    <objectSet kind=\"inclusive\">\r\n      <adtcore:objectReferences>\r\n        <adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n      </adtcore:objectReferences>\r\n    </objectSet>\r\n  </objectSets>\r\n</atc:run>\r\n",
-			"collection_id": "15ada0a6-0959-0995-af92-7668de3643fe"
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const statText = \"FINDING_STATS\";",
+							"const failText = \"TOOL_FAILURE\";",
+							"",
+							"function getFailInfo(info) {",
+							"    if (info === undefined) return;",
+							"    if (info.length === undefined ) {",
+							"        if (info[\"atcinfo:type\"] === failText) return info[\"atcinfo:description\"];",
+							"    } else {",
+							"        var stat = info.find(item => item[\"atcinfo:type\"] === failText);",
+							"        if (stat !== undefined) {",
+							"            return stat[\"atcinfo:description\"];",
+							"        }",
+							"    }",
+							"    return \"\";",
+							"}",
+							"",
+							"function getStatInfo(info) {",
+							"    if (info === undefined) return;",
+							"    if (info.length === undefined ) {",
+							"        if (info[\"atcinfo:type\"] === statText) return info[\"atcinfo:description\"];",
+							"    } else {",
+							"        var stat = info.find(item => item[\"atcinfo:type\"] === statText);",
+							"        if (stat !== undefined) {",
+							"            return stat[\"atcinfo:description\"];",
+							"        }",
+							"    }",
+							"    return \"\";",
+							"}",
+							"",
+							"if (tests[\"Status code is 200\"] = responseCode.code === 200) {",
+							"    var jsonObject = xml2Json(responseBody);",
+							"    ",
+							"    var fail = getFailInfo(jsonObject[\"atcworklist:worklistRun\"][\"atcworklist:infos\"][\"atcinfo:info\"]);",
+							"    var stat = getStatInfo(jsonObject[\"atcworklist:worklistRun\"][\"atcworklist:infos\"][\"atcinfo:info\"]);",
+							"    ",
+							"    if ((fail !== undefined) && (fail !== \"\")) {",
+							"        tests[fail] = false;",
+							"        postman.setNextRequest(null);",
+							"    } else {",
+							"        if ((stat !== undefined) && (stat !== \"\")) {",
+							"            totalError = statSegments = stat.split(\",\")[0];",
+							"            totalWarning = statSegments = stat.split(\",\")[1];",
+							"            tests[\"No error found [Actual=\" + stat + \"]\"] = totalError === \"0\";",
+							"            ",
+							"            if ((totalError === \"0\") && (totalWarning === \"0\")) {",
+							"                postman.setNextRequest(null);",
+							"            }",
+							"        } else {",
+							"            tests[\"No result statistics found. The remaining steps are skipped...\"] = true;",
+							"            postman.setNextRequest(null);",
+							"        }",
+							"    }",
+							"}",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "{{x-csrf-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/xml"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<atc:run xmlns:atc=\"http://www.sap.com/adt/atc\" maximumVerdicts=\"100\">\r\n  <objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n    <objectSet kind=\"inclusive\">\r\n      <adtcore:objectReferences>\r\n        <adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n      </adtcore:objectReferences>\r\n    </objectSet>\r\n  </objectSets>\r\n</atc:run>\r\n"
+				},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/runs?worklistId={{worklist_id}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"atc",
+						"runs"
+					],
+					"query": [
+						{
+							"key": "worklistId",
+							"value": "{{worklist_id}}",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "GetATCResult",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"",
+							"function displayFinding(finding, attr) {",
+							"    var priority = finding.$[\"atcfinding:priority\"];",
+							"    if (priority === \"1\") { //Error",
+							"        tests[\"ERROR: \" + finding.$[\"atcfinding:checkTitle\"] + \": \" + attr[\"adtcore:packageName\"] + \"/\" + attr[\"adtcore:type\"] + \"/\" + attr[\"adtcore:name\"] + \" by \" + attr[\"atcobject:author:author\"]] = false;",
+							"    } else if (priority === \"2\") {  //Warning",
+							"        tests[\"WARNING: \" + finding.$[\"atcfinding:checkTitle\"] + \": \" + attr[\"adtcore:packageName\"] + \"/\" + attr[\"adtcore:type\"] + \"/\" + attr[\"adtcore:name\"] + \" by \" + attr[\"atcobject:author:author\"]] = true;",
+							"    }",
+							"}",
+							"",
+							"function processFinding(finding, attr) {",
+							"    if (finding === undefined) return;",
+							"    if (finding.length === undefined) {",
+							"        displayFinding(finding, attr);",
+							"    } else {",
+							"        finding.forEach(function (finding) {",
+							"            displayFinding(finding, attr);",
+							"        });",
+							"    }",
+							"}",
+							"",
+							"function processObject(object) {",
+							"    if (object === undefined) return;",
+							"    if (object.length === undefined) {",
+							"        processFinding(object[\"atcobject:findings\"][\"atcfinding:finding\"], object.$);",
+							"    } else {",
+							"        object.forEach(function (object) {",
+							"            processFinding(object[\"atcobject:findings\"][\"atcfinding:finding\"], object.$);",
+							"        });",
+							"    }",
+							"}",
+							"",
+							"if (tests[\"Status code is 200\"] = responseCode.code === 200) {",
+							"    var jsonObject = xml2Json(responseBody);",
+							"    ",
+							"    processObject(jsonObject[\"atcworklist:worklist\"][\"atcworklist:objects\"][\"atcobject:object\"]);",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-CSRF-Token",
+						"value": "{{x-csrf-token}}"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists/{{worklist_id}}?includeExemptedFindings=false",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"sap",
+						"bc",
+						"adt",
+						"atc",
+						"worklists",
+						"{{worklist_id}}"
+					],
+					"query": [
+						{
+							"key": "includeExemptedFindings",
+							"value": "false",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }

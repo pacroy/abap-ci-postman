@@ -8,11 +8,22 @@ Visit my blog about this repository --> https://medium.com/pacroy/continuous-int
 - *abap_sci.postman_collection.json* - Run SCI via ATC
 - *NPL.postman_environment.json* - Environment parameters - the 'config file'
 
-## Instructions
+## Running with Postman
 
 1. Import JSON files into Postman.
-2. Edit Environment parameters
-3. Test running the collection
+2. Edit imported Environment parameters *NPL*
+3. Setup proper Authorization in the first request
+4. Test running the collection
+
+## Running with Newman CLI
+
+Example:
+
+```
+newman run abap_unit_coverage.postman_collection.json --insecure --bail --environment NPL.postman_environment.json --global-var username=username --global-var password=password
+```
+
+*Replace username and password with your SAP ID accordingly.
 
 ## Environment Parameters
 
@@ -21,7 +32,7 @@ Visit my blog about this repository --> https://medium.com/pacroy/continuous-int
 | protocol | `http` or `https` |
 | host | hostname of your SAP server\* |
 | port | port of your SAP server\* |
-| authorization | Your login token. Generate one using Authorization tab in Postman |
+| client | Your SAP client to run on |
 | package | The package you want to run against, including its subpackages\** |
 | coverage_type | `statement`, `branch`, or `procedure` |
 | coverage_min | Minimum coverage percentage to 'pass' |
