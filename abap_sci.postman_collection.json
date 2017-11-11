@@ -1,8 +1,7 @@
 {
 	"info": {
 		"name": "abap_sci",
-		"_postman_id": "695d9727-8361-d90b-73bd-bf523f0d9085",
-		"description": "",
+		"_postman_id": "ea810b24-64ad-2891-f05a-a2802770f6ec",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -85,8 +84,7 @@
 						"adt",
 						"abapunit"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -144,8 +142,7 @@
 							"equals": true
 						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -252,8 +249,7 @@
 							"equals": true
 						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -314,7 +310,10 @@
 						"value": "{{x-csrf-token}}"
 					}
 				],
-				"body": {},
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
 				"url": {
 					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists/{{worklist_id}}?includeExemptedFindings=false",
 					"protocol": "{{protocol}}",
@@ -337,8 +336,7 @@
 							"equals": true
 						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		}

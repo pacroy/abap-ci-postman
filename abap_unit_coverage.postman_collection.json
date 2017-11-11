@@ -1,8 +1,7 @@
 {
 	"info": {
 		"name": "abap_unit_coverage",
-		"_postman_id": "723ac2a9-85c1-df34-0e55-d065f6da2503",
-		"description": "",
+		"_postman_id": "a6d5cc81-2518-8553-8cae-0b01290e39f2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -85,8 +84,7 @@
 						"adt",
 						"abapunit"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -208,8 +206,7 @@
 						"abapunit",
 						"testruns"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -222,9 +219,9 @@
 						"type": "text/javascript",
 						"exec": [
 							"var coverageType = postman.getEnvironmentVariable(\"coverage_type\");",
-							"var minimumCoverage = postman.getEnvironmentVariable(\"coverage_min\");",
-							"var maximumLevel = postman.getEnvironmentVariable(\"coverage_maxlevel\");",
-							"var checkLevel = postman.getEnvironmentVariable(\"coverage_chklevel\");",
+							"var minimumCoverage = parseFloat(postman.getEnvironmentVariable(\"coverage_min\"));",
+							"var maximumLevel = parseInt(postman.getEnvironmentVariable(\"coverage_maxlevel\"));",
+							"var checkLevel = parseInt(postman.getEnvironmentVariable(\"coverage_chklevel\"));",
 							"var exclusion = JSON.parse(postman.getEnvironmentVariable(\"exclusion\"));",
 							"",
 							"function getCoveragePercentage(covStat) {",
@@ -346,8 +343,7 @@
 						"measurements",
 						"{{coverage_id}}"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		}
