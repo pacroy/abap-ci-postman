@@ -14,7 +14,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
-							"    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
+							"    pm.environment.set(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
 							"} else {",
 							"    postman.setNextRequest(null);   ",
 							"}"
