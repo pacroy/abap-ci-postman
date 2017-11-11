@@ -72,7 +72,7 @@
 					"raw": "{\n\t\n}"
 				},
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/abapunit",
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -82,7 +82,7 @@
 						"sap",
 						"bc",
 						"adt",
-						"abapunit"
+						"atc"
 					]
 				}
 			},
