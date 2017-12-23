@@ -40,7 +40,8 @@ coverage_min:80
 | --- | --- |
 | protocol | `http` or `https` |
 | port | port of your SAP server\* |
-| client | Your SAP client to run on |
+| client | Your SAP golden client |
+| client_test | Your SAP client to run test against |
 | coverage_type | `statement`, `branch`, or `procedure` |
 | coverage_maxlevel | Number of depth level to cumulate and display coverage result |
 | coverage_chklevel | Number of depth level to check against minimum percentage. 0 means only top-level |

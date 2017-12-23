@@ -1,8 +1,7 @@
 {
 	"info": {
 		"name": "abap_sci",
-		"_postman_id": "695d9727-8361-d90b-73bd-bf523f0d9085",
-		"description": "",
+		"_postman_id": "fbd8d31b-8cc8-8917-5cb8-d97991cde2cf",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -56,7 +55,7 @@
 					"raw": "{\n\t\n}"
 				},
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists",
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists?sap-client={{client}}&sap-language=EN",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -68,9 +67,20 @@
 						"adt",
 						"atc",
 						"worklists"
+					],
+					"query": [
+						{
+							"key": "sap-client",
+							"value": "{{client}}",
+							"equals": true
+						},
+						{
+							"key": "sap-language",
+							"value": "EN",
+							"equals": true
+						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -108,7 +118,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists?checkVariant={{atc_variant}}",
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists?checkVariant={{atc_variant}}&sap-client={{client}}&sap-language=EN",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -126,10 +136,19 @@
 							"key": "checkVariant",
 							"value": "{{atc_variant}}",
 							"equals": true
+						},
+						{
+							"key": "sap-client",
+							"value": "{{client}}",
+							"equals": true
+						},
+						{
+							"key": "sap-language",
+							"value": "EN",
+							"equals": true
 						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -216,7 +235,7 @@
 					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<atc:run xmlns:atc=\"http://www.sap.com/adt/atc\" maximumVerdicts=\"100\">\r\n  <objectSets xmlns:adtcore=\"http://www.sap.com/adt/core\">\r\n    <objectSet kind=\"inclusive\">\r\n      <adtcore:objectReferences>\r\n        <adtcore:objectReference adtcore:uri=\"/sap/bc/adt/vit/wb/object_type/devck/object_name/{{package}}\"/>\r\n      </adtcore:objectReferences>\r\n    </objectSet>\r\n  </objectSets>\r\n</atc:run>\r\n"
 				},
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/runs?worklistId={{worklist_id}}",
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/runs?worklistId={{worklist_id}}&sap-client={{client}}&sap-language=EN",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -234,10 +253,19 @@
 							"key": "worklistId",
 							"value": "{{worklist_id}}",
 							"equals": true
+						},
+						{
+							"key": "sap-client",
+							"value": "{{client}}",
+							"equals": true
+						},
+						{
+							"key": "sap-language",
+							"value": "EN",
+							"equals": true
 						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -300,7 +328,7 @@
 				],
 				"body": {},
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists/{{worklist_id}}?includeExemptedFindings=false",
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists/{{worklist_id}}?includeExemptedFindings=false&sap-client={{client}}&sap-language=EN",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -319,10 +347,19 @@
 							"key": "includeExemptedFindings",
 							"value": "false",
 							"equals": true
+						},
+						{
+							"key": "sap-client",
+							"value": "{{client}}",
+							"equals": true
+						},
+						{
+							"key": "sap-language",
+							"value": "EN",
+							"equals": true
 						}
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		}
