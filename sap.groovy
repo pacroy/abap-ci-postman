@@ -5,7 +5,7 @@ def abap_unit_coverage(HOST,CREDENTIAL,PACKAGE,COVERAGE) {
 		stage('ABAP Unit and Code Coverage') {
 			dir('sap-pipeline') {
 				bat "newman run abap_unit_coverage.postman_collection.json --insecure --bail " +
-				"--environment SAP_Pipeline.postman_environment.json " +
+				"--environment NPL.postman_environment.json " +
 				"--timeout-request 120000 " +
 				"--global-var host=$HOST " +
 				"--global-var username=$USERNAME " +
@@ -24,7 +24,7 @@ def abap_sci(HOST,CREDENTIAL,PACKAGE) {
 		stage('ABAP Code Inspector') {
 			dir('sap-pipeline') {
 					bat "newman run abap_sci.postman_collection.json --insecure --bail " +
-					"--environment SAP_Pipeline.postman_environment.json " +
+					"--environment NPL.postman_environment.json " +
 					"--timeout-request 120000 " +
 					"--global-var host=$HOST " +
 					"--global-var username=$USERNAME " +
