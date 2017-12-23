@@ -40,18 +40,20 @@ def sap_api_test(HOST,CREDENTIAL) {
 	
 	withCredentials([usernamePassword(credentialsId: CREDENTIAL, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 		stage('SAP API Tests') {
-			try {
-				bat "newman run SimpleRESTTest.postman_collection.json --insecure --bail " + 
-				"--environment NPL.postman_environment.json " + 
-				"--reporters junit " +
-				"--timeout-request 10000 " +
-				"--global-var username=$USERNAME " + 
-				"--global-var password=$PASSWORD "
-			} catch(e) {
-				skip_pipeline = true
-				currentBuild.result = 'FAILURE'
+			dir('sap-pipeline') {
+				try {
+					bat "newman run SimpleRESTTest.postman_collection.json --insecure --bail " + 
+					"--environment NPL.postman_environment.json " + 
+					"--reporters junit " +
+					"--timeout-request 10000 " +
+					"--global-var username=$USERNAME " + 
+					"--global-var password=$PASSWORD "
+				} catch(e) {
+					skip_pipeline = true
+					currentBuild.result = 'FAILURE'
+				}
+				junit 'newman/*.xml'
 			}
-			junit 'newman/*.xml'
 		}
 	}
 }
