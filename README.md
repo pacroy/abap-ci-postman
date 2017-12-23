@@ -6,11 +6,11 @@ Visit my blog about this repository --> https://medium.com/pacroy/continuous-int
 
 | Name | Description |
 | --- | --- |
-| abap_unit_coverage.postman_collection.json | Run ABAP Unit and check code coverage |
-| abap_sci.postman_collection.json | Run ABAP Static Code Inspector (SCI) via ATC |
+| abap_unit_coverage.postman_collection.json | Postman collection to run ABAP Unit and check code coverage |
+| abap_sci.postman_collection.json | Postman collection to run ABAP Static Code Inspector (SCI) via ATC |
 | NPL.postman_environment.json | Environment variables |
 | sap.groovy | Groovy script for integrating into Jenkinsfile (see [example](https://github.com/pacroy/abap-rest-api/blob/master/Jenkinsfile)) |
-| SimpleRESTTest.postman_collection.json | API Test collection of [abap-rest-api](https://github.com/pacroy/abap-rest-api)  |
+| SimpleRESTTest.postman_collection.json | Postman collection to run API tests of [abap-rest-api](https://github.com/pacroy/abap-rest-api)  |
 
 ## Running with Postman
 
