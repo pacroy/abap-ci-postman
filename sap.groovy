@@ -43,6 +43,7 @@ def sap_api_test(HOST,CREDENTIAL) {
 			try {
 				bat "newman run SimpleRESTTest.postman_collection.json --insecure --bail " + 
 				"--environment NPL.postman_environment.json " + 
+				"--reporters junit " +
 				"--timeout-request 10000 " +
 				"--global-var username=$USERNAME " + 
 				"--global-var password=$PASSWORD "
@@ -50,6 +51,7 @@ def sap_api_test(HOST,CREDENTIAL) {
 				skip_pipeline = true
 				currentBuild.result = 'FAILURE'
 			}
+			junit 'newman/*.xml'
 		}
 	}
 }
