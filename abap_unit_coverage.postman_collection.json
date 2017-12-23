@@ -1,7 +1,8 @@
 {
 	"info": {
 		"name": "abap_unit_coverage",
-		"_postman_id": "a6d5cc81-2518-8553-8cae-0b01290e39f2",
+		"_postman_id": "723ac2a9-85c1-df34-0e55-d065f6da2503",
+		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -9,57 +10,40 @@
 			"name": "GetToken",
 			"event": [
 				{
-					"listen": "test",
+					"listen": "prerequest",
 					"script": {
+						"id": "a69e27e3-2b27-4595-ad7b-db1478522af3",
 						"type": "text/javascript",
 						"exec": [
-							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
-							"    pm.environment.set(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
-							"} else {",
-							"    postman.setNextRequest(null);   ",
-							"}"
+							"//Display variables",
+							"console.log(\"==========Environment Variables==========\");",
+							"for(var attr in environment) {",
+							"    console.log(attr + \"=\" + environment[attr]);",
+							"}",
+							"console.log(\"==========Global Variables==========\");",
+							"for(var attr in globals) {",
+							"    console.log(attr + \"=\" + globals[attr]);",
+							"}",
+							""
 						]
 					}
 				},
 				{
-					"listen": "prerequest",
+					"listen": "test",
 					"script": {
+						"id": "3a8a19d9-4537-4dc4-8859-9c78679063c6",
 						"type": "text/javascript",
 						"exec": [
-							"//Display environment variables",
-							"console.log(\"==========Environment Variables==========\");",
-							"for(var attr in environment){",
-							"    console.log(attr + \"=\" + environment[attr]);",
+							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
+							"    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
+							"} else {",
+							"    postman.setNextRequest(null);   ",
 							"}"
 						]
 					}
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "basic",
-					"basic": [
-						{
-							"key": "username",
-							"value": "{{username}}",
-							"type": "string"
-						},
-						{
-							"key": "password",
-							"value": "{{password}}",
-							"type": "string"
-						},
-						{
-							"key": "saveHelperData",
-							"type": "any"
-						},
-						{
-							"key": "showPassword",
-							"value": false,
-							"type": "boolean"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [
 					{
@@ -84,7 +68,8 @@
 						"adt",
 						"abapunit"
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
 		},
@@ -94,23 +79,25 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "a8914588-f583-45a4-af49-a6d8392aca41",
 						"type": "text/javascript",
 						"exec": [
 							"var totalAlert = 0;",
 							"var programAlert = 0;",
 							"",
 							"function processAlert(alert, level) {",
+							"    var test_passed = true;",
 							"    if (alert.$.severity === \"critical\") {",
 							"        totalAlert++;",
 							"        programAlert++;",
-							"        ",
-							"        //Print out error details",
-							"        if (alert.details.detail.$ === undefined) {",
-							"            tests[\">>\" + alert.title ] = false;",
-							"        } else {",
-							"            tests[\">>\" + alert.title + \": \" + alert.details.detail.$.text] = false;",
-							"        }",
+							"        test_passed = false;",
 							"    }",
+							"    //Print out error details",
+							"    if ((alert.details === undefined) || (alert.details.detail.$ === undefined)) {",
+							"        tests[\">>\" + alert.title ] = test_passed;",
+							"    } else {",
+							"        tests[\">>\" + alert.title + \": \" + alert.details.detail.$.text] = test_passed;",
+							"    } ",
 							"}",
 							"",
 							"function processAlerts(alerts, level) {",
@@ -149,14 +136,14 @@
 							"",
 							"if (tests[\"Status code is 200\"] = responseCode.code === 200) {",
 							"    var jsonObject = xml2Json(responseBody);",
-							"    ",
-							"    if (tests[\"Job finished successfully\"] = jsonObject[\"aunit:runResult\"].alerts == \"\") {",
+							"",
+							"    if (jsonObject[\"aunit:runResult\"].alerts === \"\") {",
 							"        processNodes(jsonObject[\"aunit:runResult\"].program, 0);",
 							"    } else {",
 							"        processAlerts(jsonObject[\"aunit:runResult\"].alerts, 0);",
 							"    }",
 							"    ",
-							"    if (totalAlert === 0) {",
+							"    if (tests[\"Job finished successfully\"] = totalAlert === 0) {",
 							"        //Get and set coverage ID",
 							"        if (jsonObject[\"aunit:runResult\"].external !== undefined) {",
 							"            var uriSegments = jsonObject[\"aunit:runResult\"].external.coverage.$[\"adtcore:uri\"].split(\"/\");",
@@ -206,7 +193,8 @@
 						"abapunit",
 						"testruns"
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
 		},
@@ -216,13 +204,14 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "29f784ac-521e-4c82-b30e-d244f4ad93db",
 						"type": "text/javascript",
 						"exec": [
-							"var coverageType = postman.getEnvironmentVariable(\"coverage_type\");",
-							"var minimumCoverage = parseFloat(postman.getEnvironmentVariable(\"coverage_min\"));",
-							"var maximumLevel = parseInt(postman.getEnvironmentVariable(\"coverage_maxlevel\"));",
-							"var checkLevel = parseInt(postman.getEnvironmentVariable(\"coverage_chklevel\"));",
-							"var exclusion = JSON.parse(postman.getEnvironmentVariable(\"exclusion\"));",
+							"var coverageType = pm.variables.get(\"coverage_type\");",
+							"var minimumCoverage = pm.variables.get(\"coverage_min\");",
+							"var maximumLevel = pm.variables.get(\"coverage_maxlevel\");",
+							"var checkLevel = pm.variables.get(\"coverage_chklevel\");",
+							"var exclusion = JSON.parse(pm.variables.get(\"exclusion\"));",
 							"",
 							"function getCoveragePercentage(covStat) {",
 							"    if (covStat.total === 0) {",
@@ -343,9 +332,56 @@
 						"measurements",
 						"{{coverage_id}}"
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			},
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "saveHelperData",
+				"type": "any"
+			},
+			{
+				"key": "showPassword",
+				"value": false,
+				"type": "boolean"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "84dde635-c594-44a2-b8b5-75771c19d236",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "c5f9fce9-68f9-45df-8887-c2237f86c26f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }

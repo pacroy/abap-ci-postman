@@ -1,7 +1,8 @@
 {
 	"info": {
 		"name": "abap_sci",
-		"_postman_id": "ea810b24-64ad-2891-f05a-a2802770f6ec",
+		"_postman_id": "695d9727-8361-d90b-73bd-bf523f0d9085",
+		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -9,57 +10,40 @@
 			"name": "GetToken",
 			"event": [
 				{
-					"listen": "test",
+					"listen": "prerequest",
 					"script": {
+						"id": "c4f2beec-5943-442e-b0aa-2a29e375e4e9",
 						"type": "text/javascript",
 						"exec": [
-							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
-							"    pm.environment.set(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
-							"} else {",
-							"    postman.setNextRequest(null);   ",
-							"}"
+							"//Display variables",
+							"console.log(\"==========Environment Variables==========\");",
+							"for(var attr in environment) {",
+							"    console.log(attr + \"=\" + environment[attr]);",
+							"}",
+							"console.log(\"==========Global Variables==========\");",
+							"for(var attr in globals) {",
+							"    console.log(attr + \"=\" + globals[attr]);",
+							"}",
+							""
 						]
 					}
 				},
 				{
-					"listen": "prerequest",
+					"listen": "test",
 					"script": {
+						"id": "44123904-0ed3-415a-96a5-c681c4fc9aa9",
 						"type": "text/javascript",
 						"exec": [
-							"//Display environment variables",
-							"console.log(\"==========Environment Variables==========\");",
-							"for(var attr in environment){",
-							"    console.log(attr + \"=\" + environment[attr]);",
+							"if (tests[\"X-CSRF-Token is present\"] = responseHeaders.hasOwnProperty(\"x-csrf-token\")) {",
+							"    postman.setEnvironmentVariable(\"x-csrf-token\", postman.getResponseHeader(\"x-csrf-token\"));",
+							"} else {",
+							"    postman.setNextRequest(null);   ",
 							"}"
 						]
 					}
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "basic",
-					"basic": [
-						{
-							"key": "username",
-							"value": "{{username}}",
-							"type": "string"
-						},
-						{
-							"key": "password",
-							"value": "{{password}}",
-							"type": "string"
-						},
-						{
-							"key": "saveHelperData",
-							"type": "any"
-						},
-						{
-							"key": "showPassword",
-							"value": false,
-							"type": "boolean"
-						}
-					]
-				},
 				"method": "GET",
 				"header": [
 					{
@@ -72,7 +56,7 @@
 					"raw": "{\n\t\n}"
 				},
 				"url": {
-					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc",
+					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{host}}"
@@ -82,9 +66,11 @@
 						"sap",
 						"bc",
 						"adt",
-						"atc"
+						"atc",
+						"worklists"
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
 		},
@@ -142,7 +128,8 @@
 							"equals": true
 						}
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
 		},
@@ -249,7 +236,8 @@
 							"equals": true
 						}
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
 		},
@@ -310,10 +298,7 @@
 						"value": "{{x-csrf-token}}"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
+				"body": {},
 				"url": {
 					"raw": "{{protocol}}://{{host}}:{{port}}/sap/bc/adt/atc/worklists/{{worklist_id}}?includeExemptedFindings=false",
 					"protocol": "{{protocol}}",
@@ -336,9 +321,56 @@
 							"equals": true
 						}
 					]
-				}
+				},
+				"description": ""
 			},
 			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			},
+			{
+				"key": "saveHelperData",
+				"type": "any"
+			},
+			{
+				"key": "showPassword",
+				"value": false,
+				"type": "boolean"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "ebde6e7e-2334-46b8-b842-10e51b26d905",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "87f694c9-7aad-4a10-90e3-cb45894fa4e8",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
