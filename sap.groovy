@@ -46,6 +46,7 @@ def sap_api_test(HOST,CREDENTIAL) {
 					"--environment NPL.postman_environment.json " + 
 					"--reporters junit " +
 					"--timeout-request 10000 " +
+					"--global-var host=$HOST " +
 					"--global-var username=$USERNAME " + 
 					"--global-var password=$PASSWORD "
 				} catch(e) {
