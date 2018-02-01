@@ -1,8 +1,12 @@
-def abap_unit_coverage(HOST,CREDENTIAL,PACKAGE,COVERAGE) {	
+def abap_unit(LABEL,HOST,CREDENTIAL,PACKAGE,COVERAGE) {	
+	println "LABEL=" + LABEL
+	println "HOST=" + HOST
 	println "CREDENTIAL=" + CREDENTIAL
+	println "PACKAGE=" + PACKAGE
+	println "COVERAGE=" + COVERAGE
 
 	withCredentials([usernamePassword(credentialsId: CREDENTIAL, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-		stage('ABAP Unit and Code Coverage') {
+		stage('[' + LABEL + '] ABAP Unit') {
 			dir('sap-pipeline') {
 				bat "newman run abap_unit_coverage.postman_collection.json --insecure --bail " +
 				"--environment NPL.postman_environment.json " +
@@ -17,11 +21,15 @@ def abap_unit_coverage(HOST,CREDENTIAL,PACKAGE,COVERAGE) {
 	}
 }
 
-def abap_sci(HOST,CREDENTIAL,PACKAGE) {	
+def abap_sci(LABEL,HOST,CREDENTIAL,PACKAGE,VARIANT) {	
+	println "LABEL=" + LABEL
+	println "HOST=" + HOST
 	println "CREDENTIAL=" + CREDENTIAL
+	println "PACKAGE=" + PACKAGE
+	println "VARIANT=" + VARIANT
 	
 	withCredentials([usernamePassword(credentialsId: CREDENTIAL, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {	
-		stage('ABAP Code Inspector') {
+		stage('[' + LABEL + '] ABAP Code Inspector') {
 			dir('sap-pipeline') {
 					bat "newman run abap_sci.postman_collection.json --insecure --bail " +
 					"--environment NPL.postman_environment.json " +
@@ -29,17 +37,20 @@ def abap_sci(HOST,CREDENTIAL,PACKAGE) {
 					"--global-var host=$HOST " +
 					"--global-var username=$USERNAME " +
 					"--global-var password=$PASSWORD " +
-					"--global-var package=$PACKAGE " 
+					"--global-var package=$PACKAGE " +
+					"--global-var atc_variant=$VARIANT "
 			}
 		}
 	}
 }
 
-def sap_api_test(HOST,CREDENTIAL) {	
+def sap_api_test(LABEL,HOST,CREDENTIAL) {
+	println "LABEL=" + LABEL
+	println "HOST=" + HOST
 	println "CREDENTIAL=" + CREDENTIAL
 	
 	withCredentials([usernamePassword(credentialsId: CREDENTIAL, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-		stage('SAP API Tests') {
+		stage('[' + LABEL + '] SAP API Tests') {
 			dir('sap-pipeline') {
 				try {
 					bat "newman run SimpleRESTTest.postman_collection.json --insecure --bail " + 
@@ -50,8 +61,7 @@ def sap_api_test(HOST,CREDENTIAL) {
 					"--global-var username=$USERNAME " + 
 					"--global-var password=$PASSWORD "
 				} catch(e) {
-					skip_pipeline = true
-					currentBuild.result = 'FAILURE'
+					return 'FAILURE'
 				}
 				junit 'newman/*.xml'
 			}
